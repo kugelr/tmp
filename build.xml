@@ -1,0 +1,53 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" default="jar">
+	
+	<path id="jar.path">
+
+	  <fileset dir="lib">
+	    <include name="**/*.jar" />
+	  </fileset>
+	<fileset dir="build/classes">
+			    <include name="**/*.class" />
+	</fileset>	
+
+	</path>
+	
+	
+	<target name="resolve" description="--> retrieve dependencies with ivy">
+	   <ivy:retrieve />
+	</target>
+
+    <target name="clean" depends="resolve">
+        <delete dir="build"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes" classpathref="jar.path" />
+    </target>
+	
+	<target name="unit-test" depends="compile">
+	  <junit printsummary="yes" haltonfailure="yes">
+	  	
+	  	<classpath refid="jar.path" />
+	  	<classpath></classpath>
+	  	
+	    <test name="HelloWorldBuilderTest"
+	             haltonfailure="no" outfile="result">
+	    </test>
+	  </junit>
+	</target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="build/jar"/>
+        <jar destfile="deploy/DevOpsCamp.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Main-Class" value="de.devops.camp.HelloWorldServlet"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="run">
+        <java jar="build/jar/HelloWorld.jar" fork="true"/>
+    </target>
+
+</project>
